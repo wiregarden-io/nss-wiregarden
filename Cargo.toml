@@ -3,6 +3,11 @@ name = "libnss-wiregarden"
 version = "0.1.0"
 authors = ["Casey Marshall <git@cmars.tech>"]
 edition = "2018"
+description = "nss-wiregarden is a libnss Name Service Switch host plugin that resolves wiregarden peers by device and network name."
+readme = "README.md"
+homepage = "https://wiregarden.io/"
+license-file = "LICENSE"
+repository = "https://github.com/wiregarden-io/nss-wiregarden"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
