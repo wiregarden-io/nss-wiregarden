@@ -22,14 +22,16 @@ jobs:
       run: cargo install cargo-deb
     - name: Build deb package
       run: cargo deb --verbose
-    - uses: actions/upload-artifact@v2
-      with:
-        path: target/debian/*.deb
 
     - name: Get deb filename
       shell: bash
       run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
       id: extract_debfile
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: target/debian/${{ steps.extract_debfile.outputs.debfile }}
+        name: ${{ steps.extract_debfile.outputs.debfile }}
 
     - name: Create Release
       id: create_release
@@ -49,6 +51,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./target/debian/*.deb
+        asset_path: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
         asset_name: ${{ steps.extract_debfile.outputs.debfile }}
         asset_content_type: application/octet-stream
