@@ -26,7 +26,7 @@ jobs:
       id: extract_debfile
     - name: Get package version
       shell: bash
-      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/"//g;s/ //g')
+      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/\"//g;s/ //g')"
       id: extract_version
     - name: Get time of day
       shell: bash
