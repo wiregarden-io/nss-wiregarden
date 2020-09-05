@@ -27,3 +27,7 @@ crate-type = ["cdylib"]
 depends = "base-files, libc6, libsqlite3-0"
 priority = "optional"
 extended-description = "nss-wiregarden is a libnss host plugin that resolves wiregarden peers by device and network name."
+assets = [
+	["target/release/libnss_wiregarden.so", "lib/libnss_wiregarden.so.2", "644"],
+	["README.md", "usr/share/doc/libnss-wiregarden/README", "644"],
+]
