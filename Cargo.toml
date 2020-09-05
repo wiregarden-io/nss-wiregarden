@@ -1,6 +1,6 @@
 [package]
 name = "libnss-wiregarden"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Wiregarden Ops <ops@wiregarden.io>"]
 edition = "2018"
 description = "Wiregarden NSS host module"

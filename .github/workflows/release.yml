@@ -1,4 +1,4 @@
-name: github-release
+name: release
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  cargo-deb:
+  stable-release:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -48,8 +48,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.extract_version.outputs.version }}
-        release_name: Release ${{ steps.extract_version.outputs.version }}
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
 
@@ -59,7 +59,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
         asset_name: ${{ steps.extract_debfile.outputs.debfile }}
         asset_content_type: application/octet-stream
+
+    - name: Upload deb package to Bintray
+      shell: bash
+      run: curl -T ./target/debian/${{ steps.extract_debfile.outputs.debfile }} -ucmars232:${{ secrets.BINTRAY_API_KEY }} "https://api.bintray.com/content/wiregarden-io/unstable/nss-wiregarden/${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}/pool/l/${{ steps.extract_debfile.outputs.debfile }};deb_distribution=xenial,bionic,focal;deb_component=main;deb_architecture=amd64;publish=1;override=1"
