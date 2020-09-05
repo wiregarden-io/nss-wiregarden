@@ -19,6 +19,15 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
+    - name: Get package version
+      shell: bash
+      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/\"//g;s/ //g')"
+      id: extract_version
+    - name: Get time of day
+      shell: bash
+      run: echo "##[set-output name=time;]$(date +%s)"
+      id: extract_time
+
     - name: Install cargo-deb
       run: cargo install cargo-deb
     - name: Build deb package
@@ -28,14 +37,6 @@ jobs:
       shell: bash
       run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
       id: extract_debfile
-    - name: Get package version
-      shell: bash
-      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/\"//g;s/ //g')"
-      id: extract_version
-    - name: Get time of day
-      shell: bash
-      run: echo "##[set-output name=time;]$(date +%s)"
-      id: extract_time
 
     - uses: actions/upload-artifact@v2
       with:
