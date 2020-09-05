@@ -15,10 +15,6 @@ jobs:
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
-    - name: Install cargo-deb
-      run: cargo install cargo-deb
-    - name: Build deb package
-      run: cargo deb --verbose
 
     - name: Get deb filename
       shell: bash
@@ -32,6 +28,11 @@ jobs:
       shell: bash
       run: echo "##[set-output name=time;]$(date +%s)"
       id: extract_time
+
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+    - name: Build deb package
+      run: cargo deb --verbose --deb-version "${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}"
 
     - uses: actions/upload-artifact@v2
       with:
@@ -74,6 +75,6 @@ jobs:
         upload_path: pool/n # Typical for debian repository layout
         publish: 1
         calculate_metadata: true # Schedule metadata calculation after upload
-        deb_distribution: xenial,bionic,focal
+        deb_distribution: focal
         deb_component: main
         deb_architecture: amd64
