@@ -1,6 +1,6 @@
 # nss-wiregarden
 
-nss-wiregarden is a libnss [Name Service Switch](https://en.wikipedia.org/wiki/Name_Service_Switch) host plugin that resolves
+nss-wiregarden is a [Name Service Switch](https://en.wikipedia.org/wiki/Name_Service_Switch) host plugin that resolves
 [wiregarden](https://wiregarden.io) peers by device and network name.
 
 # Build

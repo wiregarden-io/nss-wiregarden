@@ -3,7 +3,7 @@ name = "libnss-wiregarden"
 version = "0.1.1"
 authors = ["Wiregarden Ops <ops@wiregarden.io>"]
 edition = "2018"
-description = "nss-wiregarden is a libnss host plugin that resolves wiregarden peers by device and network name."
+description = "Wiregarden NSS host module"
 readme = "README.md"
 homepage = "https://wiregarden.io/"
 license-file = "LICENSE"
@@ -26,3 +26,4 @@ crate-type = ["cdylib"]
 [package.metadata.deb]
 depends = "base-files, libc6, libsqlite3-0"
 priority = "optional"
+extended-description = "nss-wiregarden is a libnss host plugin that resolves wiregarden peers by device and network name."
