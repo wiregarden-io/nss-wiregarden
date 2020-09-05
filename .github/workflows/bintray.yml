@@ -16,15 +16,6 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - name: Install cargo-deb
-      run: cargo install cargo-deb
-    - name: Build deb package
-      run: cargo deb --verbose --deb-version "${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}"
-
-    - name: Get deb filename
-      shell: bash
-      run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
-      id: extract_debfile
     - name: Get package version
       shell: bash
       run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/\"//g;s/ //g')"
@@ -33,6 +24,16 @@ jobs:
       shell: bash
       run: echo "##[set-output name=time;]$(date +%s)"
       id: extract_time
+
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+    - name: Build deb package
+      run: cargo deb --verbose --deb-version ${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}
+
+    - name: Get deb filename
+      shell: bash
+      run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
+      id: extract_debfile
 
     - name: Upload deb package to Bintray
       shell: bash
