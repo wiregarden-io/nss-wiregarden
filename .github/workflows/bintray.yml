@@ -35,19 +35,5 @@ jobs:
       id: extract_time
 
     - name: Upload deb package to Bintray
-      uses: bpicode/github-action-upload-bintray@master
-      with:
-        file: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
-        api_user: cmars232
-        api_key: ${{ secrets.BINTRAY_API_KEY }} # An API key can be obtained from the user profile page.
-        #gpg_passphrase: ${{ secrets.BINTRAY_GPG_PASSPHRASE }} # Optional, for this to work Bintray requires a GPG public/private keypair configured for the repository owner (individual or organization).
-        repository_user: cmars232
-        repository: deb
-        package: libnss-wiregarden
-        version: ${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}
-        upload_path: pool/m/main # Typical for debian repository layout
-        publish: 1
-        calculate_metadata: true # Schedule metadata calculation after upload
-        deb_distribution: focal
-        deb_component: main
-        deb_architecture: amd64
+      shell: bash
+      run: curl -T ./target/debian/${{ steps.extract_debfile.outputs.debfile }} -ucmars232:${{ secrets.BINTRAY_API_KEY }} https://api.bintray.com/content/wiregarden-io/deb/nss-wiregarden/${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}/pool/n;deb_distribution=xenial,bionic,focal;deb_component=main;deb_architecture=amd64
