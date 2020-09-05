@@ -37,4 +37,4 @@ jobs:
 
     - name: Upload deb package to Bintray
       shell: bash
-      run: curl -T ./target/debian/${{ steps.extract_debfile.outputs.debfile }} -ucmars232:${{ secrets.BINTRAY_API_KEY }} https://api.bintray.com/content/wiregarden-io/deb/nss-wiregarden/${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}/pool/n/${{ steps.extract_debfile.outputs.debfile }};deb_distribution=xenial,bionic,focal;deb_component=main;deb_architecture=amd64
+      run: curl -T ./target/debian/${{ steps.extract_debfile.outputs.debfile }} -ucmars232:${{ secrets.BINTRAY_API_KEY }} "https://api.bintray.com/content/wiregarden-io/deb/nss-wiregarden/${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}/pool/l/${{ steps.extract_debfile.outputs.debfile }};deb_distribution=xenial,bionic,focal;deb_component=main;deb_architecture=amd64;publish=1;override=1"
