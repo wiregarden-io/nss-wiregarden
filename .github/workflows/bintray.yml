@@ -1,10 +1,7 @@
-name: cargo-deb
+name: bintray
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 env:
   CARGO_TERM_COLOR: always
@@ -37,33 +34,6 @@ jobs:
       run: echo "##[set-output name=time;]$(date +%s)"
       id: extract_time
 
-    - uses: actions/upload-artifact@v2
-      with:
-        path: target/debian/${{ steps.extract_debfile.outputs.debfile }}
-        name: ${{ steps.extract_debfile.outputs.debfile }}
-
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.extract_version.outputs.version }}
-        release_name: Release ${{ steps.extract_version.outputs.version }}
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
-        asset_name: ${{ steps.extract_debfile.outputs.debfile }}
-        asset_content_type: application/octet-stream
-
     - name: Upload deb package to Bintray
       uses: bpicode/github-action-upload-bintray@master
       with:
@@ -73,9 +43,9 @@ jobs:
         #gpg_passphrase: ${{ secrets.BINTRAY_GPG_PASSPHRASE }} # Optional, for this to work Bintray requires a GPG public/private keypair configured for the repository owner (individual or organization).
         repository_user: cmars232
         repository: deb
-        package: nss-wiregarden
+        package: libnss-wiregarden
         version: ${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}
-        upload_path: pool/n # Typical for debian repository layout
+        upload_path: pool/m/main # Typical for debian repository layout
         publish: 1
         calculate_metadata: true # Schedule metadata calculation after upload
         deb_distribution: focal
