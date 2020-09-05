@@ -16,6 +16,11 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+    - name: Build deb package
+      run: cargo deb --verbose --deb-version "${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}"
+
     - name: Get deb filename
       shell: bash
       run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
@@ -28,11 +33,6 @@ jobs:
       shell: bash
       run: echo "##[set-output name=time;]$(date +%s)"
       id: extract_time
-
-    - name: Install cargo-deb
-      run: cargo install cargo-deb
-    - name: Build deb package
-      run: cargo deb --verbose --deb-version "${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}"
 
     - uses: actions/upload-artifact@v2
       with:
