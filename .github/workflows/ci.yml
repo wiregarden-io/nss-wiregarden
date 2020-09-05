@@ -3,20 +3,39 @@ name: ci
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-
+  unstable-release:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Build
       run: cargo build --verbose
     - name: Run tests
       run: cargo test --verbose
+
+    - name: Get package version
+      shell: bash
+      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/\"//g;s/ //g')"
+      id: extract_version
+    - name: Get time of day
+      shell: bash
+      run: echo "##[set-output name=time;]$(date +%s)"
+      id: extract_time
+
+    - name: Install cargo-deb
+      run: cargo install cargo-deb
+    - name: Build deb package
+      run: cargo deb --verbose --deb-version ${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}
+
+    - name: Get deb filename
+      shell: bash
+      run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
+      id: extract_debfile
+
+    - name: Upload deb package to Bintray
+      shell: bash
+      run: curl -T ./target/debian/${{ steps.extract_debfile.outputs.debfile }} -ucmars232:${{ secrets.BINTRAY_API_KEY }} "https://api.bintray.com/content/wiregarden-io/deb/nss-wiregarden/${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}/pool/l/${{ steps.extract_debfile.outputs.debfile }};deb_distribution=xenial,bionic,focal;deb_component=main;deb_architecture=amd64;publish=1;override=1"
