@@ -2,9 +2,6 @@ name: cargo-deb
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 env:
   CARGO_TERM_COLOR: always
@@ -27,6 +24,14 @@ jobs:
       shell: bash
       run: echo "##[set-output name=debfile;]$(basename ./target/debian/*.deb)"
       id: extract_debfile
+    - name: Get package version
+      shell: bash
+      run: echo "##[set-output name=version;]$(awk -F'=' '/version/ {print $2}' Cargo.toml | sed 's/"//g;s/ //g')
+      id: extract_version
+    - name: Get time of day
+      shell: bash
+      run: echo "##[set-output name=time;]$(date +%s)
+      id: extract_time
 
     - uses: actions/upload-artifact@v2
       with:
@@ -39,8 +44,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.extract_version.outputs.version }}
+        release_name: Release ${{ steps.extract_version.outputs.version }}
         draft: false
         prerelease: false
 
@@ -54,3 +59,21 @@ jobs:
         asset_path: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
         asset_name: ${{ steps.extract_debfile.outputs.debfile }}
         asset_content_type: application/octet-stream
+
+    - name: Upload deb package to Bintray
+      uses: bpicode/github-action-upload-bintray@master
+      with:
+        file: ./target/debian/${{ steps.extract_debfile.outputs.debfile }}
+        api_user: cmars232
+        api_key: ${{ secrets.BINTRAY_API_KEY }} # An API key can be obtained from the user profile page.
+        #gpg_passphrase: ${{ secrets.BINTRAY_GPG_PASSPHRASE }} # Optional, for this to work Bintray requires a GPG public/private keypair configured for the repository owner (individual or organization).
+        repository_user: cmars232
+        repository: deb
+        package: nss-wiregarden
+        version: ${{ steps.extract_version.outputs.version }}+${{ steps.extract_time.outputs.time }}
+        upload_path: pool/n # Typical for debian repository layout
+        publish: 1
+        calculate_metadata: true # Schedule metadata calculation after upload
+        deb_distribution: xenial,bionic,focal
+        deb_component: main
+        deb_architecture: amd64
