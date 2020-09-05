@@ -30,7 +30,7 @@ jobs:
       id: extract_version
     - name: Get time of day
       shell: bash
-      run: echo "##[set-output name=time;]$(date +%s)
+      run: echo "##[set-output name=time;]$(date +%s)"
       id: extract_time
 
     - uses: actions/upload-artifact@v2
