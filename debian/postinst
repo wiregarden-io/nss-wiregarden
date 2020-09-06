@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+grep 'hosts:.*wiregarden.*' /etc/nsswitch.conf || \
+	sed -i '/hosts:/ s/$/ wiregarden/' /etc/nsswitch.conf

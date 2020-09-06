@@ -1,6 +1,6 @@
 [package]
 name = "libnss-wiregarden"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Wiregarden Ops <ops@wiregarden.io>"]
 edition = "2018"
 description = "Wiregarden NSS host module"
@@ -31,3 +31,4 @@ assets = [
 	["target/release/libnss_wiregarden.so", "lib/libnss_wiregarden.so.2", "644"],
 	["README.md", "usr/share/doc/libnss-wiregarden/README", "644"],
 ]
+maintainer-scripts = "debian"
